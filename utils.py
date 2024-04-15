@@ -35,6 +35,3 @@ def plot_radar(df, bins, column,data):
     plt.legend(loc='upper right', bbox_to_anchor=(0.1, 0.1))
 
     plt.show()
-
-# Example usage:
-# plot_radar(df, bins=20, columns=["Outcome"])
