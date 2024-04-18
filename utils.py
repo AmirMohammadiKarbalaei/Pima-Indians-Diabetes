@@ -35,3 +35,22 @@ def plot_radar(df, bins, column,data):
     plt.legend(loc='upper right', bbox_to_anchor=(0.1, 0.1))
 
     plt.show()
+
+
+def encode_blood_pressure(bp):
+    if bp < 120:
+        return 0  # Normal
+    elif bp < 130:
+        return 1  # Elevated
+    elif bp < 140:
+        return 2  # Hypertension Stage 1
+    else:
+        return 3  # Hypertension Stage 2
+    
+def categorize_glucose(glucose):
+    if glucose < 100:
+        return 0
+    elif glucose < 126:
+        return 1
+    else:
+        return 2
