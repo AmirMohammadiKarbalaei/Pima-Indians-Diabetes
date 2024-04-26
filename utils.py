@@ -54,3 +54,37 @@ def categorize_glucose(glucose):
         return 1
     else:
         return 2
+
+def calculate_feature_importance(model, data):
+    # Set the model to evaluation mode
+    model.eval()
+
+    # Move model and data to the same device
+    device = next(model.parameters()).device
+    data = data.to(device)
+
+    # Convert data to PyTorch tensor if it's not already
+    if not isinstance(data, torch.Tensor):
+        data = torch.tensor(data, dtype=torch.float32)
+
+    # Ensure gradients are enabled for the input tensor
+    data.requires_grad = True
+
+    # Forward pass to get the predictions
+    outputs = model(data)
+
+    # Initialize gradients tensor
+    gradients = torch.zeros_like(data)
+
+    # Backward pass to calculate gradients for each output element
+    model.zero_grad()
+    outputs.backward(torch.ones_like(outputs))  # Backpropagate with respect to the scalar output
+
+    # Get the gradients of the input with respect to the loss
+    gradients = data.grad.abs()
+
+    # Calculate mean gradient across samples
+    mean_gradients = gradients.mean(dim=0)
+
+    return mean_gradients.cpu().detach().numpy()  # Detach from computational graph and move to CPU
+    
