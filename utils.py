@@ -48,7 +48,7 @@ def encode_blood_pressure(bp):
     else:
         return 3  # Hypertension Stage 2
     
-def categorize_glucose(glucose):
+def categorise_glucose(glucose):
     if glucose < 100:
         return 0
     elif glucose < 126:
