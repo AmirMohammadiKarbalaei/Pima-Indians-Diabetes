@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import torch
+from sklearn.linear_model import LinearRegression
 
 def plot_radar(df, bins, column,data):
     # SET DATA 
@@ -88,4 +89,29 @@ def calculate_feature_importance(model, data):
     mean_gradients = gradients.mean(dim=0)
 
     return mean_gradients.cpu().detach().numpy()  # Detach from computational graph and move to CPU
+
+def regression_imputation(data, target_column, predictors):
+    complete_data = data.dropna(subset=[target_column])
+    missing_data = data[data[target_column].isnull()]
+    
+    X = complete_data[predictors]
+    y = complete_data[target_column]
+    
+    model = LinearRegression()
+    model.fit(X, y)
+    
+    missing_data_X = missing_data[predictors]
+    
+    # Use .loc to avoid SettingWithCopyWarning
+    missing_data.loc[:, target_column + '_imputed'] = model.predict(missing_data_X)
+    
+    imputed_data = pd.concat([complete_data, missing_data], axis=0)
+    
+    return imputed_data
+
+def combine_imputed_column(imputed_data, target_column):
+    imputed_data.loc[:, target_column] = imputed_data.apply(lambda row: row[target_column+'_imputed'] if pd.isnull(row[target_column]) else row[target_column], axis=1)
+    imputed_data.drop(columns=[target_column+'_imputed'], inplace=True)
+    
+    return imputed_data
     
