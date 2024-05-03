@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import torch.nn as nn
 import torch.optim as optim
 from itertools import product
+from sklearn.metrics import classification_report
 
 
 def plot_radar(df, bins, column,data):
@@ -97,8 +98,9 @@ def calculate_feature_importance(model, data):
     return mean_gradients.cpu().detach().numpy()  # Detach from computational graph and move to CPU
 
 def regression_imputation(data, target_column, predictors):
+    
     complete_data = data.dropna(subset=[target_column])
-    missing_data = data[data[target_column].isnull()]
+    missing_data = data[data[target_column].isnull()].copy()  # Ensure a copy is made
     
     X = complete_data[predictors]
     y = complete_data[target_column]
@@ -121,9 +123,6 @@ def combine_imputed_column(imputed_data, target_column):
     
     return imputed_data
     
-
-
-
 def train_model(model, X_train, y_train, X_val, y_val, X_test, y_test, optimizer, loss_fn, n_epochs=100, batch_size=16, patience=20):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
@@ -134,6 +133,9 @@ def train_model(model, X_train, y_train, X_val, y_val, X_test, y_test, optimizer
 
     train_losses, val_losses, test_losses = [], [], []
     train_accuracies, val_accuracies, test_accuracies = [], [], []
+    train_f1_scores, val_f1_scores, test_f1_scores = [], [], []
+    train_precisions, val_precisions, test_precisions = [], [], []
+    train_recalls, val_recalls, test_recalls = [], [], []
     train_cm, val_cm, test_cm = None, None, None
 
     best_val_acc, early_stop_counter, best_test_acc = 0, 0, 0
@@ -160,6 +162,10 @@ def train_model(model, X_train, y_train, X_val, y_val, X_test, y_test, optimizer
             y_pred_train = model(X_train)
             train_accuracy = (y_pred_train.round() == y_train).float().mean().item()
             train_accuracies.append(train_accuracy)
+            train_report = classification_report(y_train.cpu().numpy(), y_pred_train.round().cpu().numpy(), output_dict=True)
+            train_f1_scores.append(train_report['macro avg']['f1-score'])
+            train_precisions.append(train_report['macro avg']['precision'])
+            train_recalls.append(train_report['macro avg']['recall'])
 
             # Compute validation loss and accuracy
             y_pred_val = model(X_val)
@@ -167,6 +173,10 @@ def train_model(model, X_train, y_train, X_val, y_val, X_test, y_test, optimizer
             val_losses.append(val_loss.item())
             val_accuracy = (y_pred_val.round() == y_val).float().mean().item()
             val_accuracies.append(val_accuracy)
+            val_report = classification_report(y_val.cpu().numpy(), y_pred_val.round().cpu().numpy(), output_dict=True)
+            val_f1_scores.append(val_report['macro avg']['f1-score'])
+            val_precisions.append(val_report['macro avg']['precision'])
+            val_recalls.append(val_report['macro avg']['recall'])
 
             # Compute test loss and accuracy
             y_pred_test = model(X_test)
@@ -174,6 +184,10 @@ def train_model(model, X_train, y_train, X_val, y_val, X_test, y_test, optimizer
             test_losses.append(test_loss.item())
             test_accuracy = (y_pred_test.round() == y_test).float().mean().item()
             test_accuracies.append(test_accuracy)
+            test_report = classification_report(y_test.cpu().numpy(), y_pred_test.round().cpu().numpy(), output_dict=True)
+            test_f1_scores.append(test_report['macro avg']['f1-score'])
+            test_precisions.append(test_report['macro avg']['precision'])
+            test_recalls.append(test_report['macro avg']['recall'])
 
             # Update confusion matrices
             if epoch == n_epochs - 1:
@@ -196,18 +210,21 @@ def train_model(model, X_train, y_train, X_val, y_val, X_test, y_test, optimizer
                 break
 
         print(f'Epoch [{epoch + 1}/{n_epochs}], Train Loss: {train_losses[-1]:.4f}, Val Loss: {val_losses[-1]:.4f}, Test Loss: {test_losses[-1]:.4f}, '
-              f'Train Accuracy: {train_accuracy:.4f}, Val Accuracy: {val_accuracy:.4f}, Test Accuracy: {test_accuracy:.4f}')
+              f'Train Accuracy: {train_accuracy:.4f}, Val Accuracy: {val_accuracy:.4f}, Test Accuracy: {test_accuracy:.4f}, '
+              f'Train F1 Score: {train_f1_scores[-1]:.4f}, Val F1 Score: {val_f1_scores[-1]:.4f}, Test F1 Score: {test_f1_scores[-1]:.4f}, '
+              f'Train Precision: {train_precisions[-1]:.4f}, Val Precision: {val_precisions[-1]:.4f}, Test Precision: {test_precisions[-1]:.4f}, '
+              f'Train Recall: {train_recalls[-1]:.4f}, Val Recall: {val_recalls[-1]:.4f}, Test Recall: {test_recalls[-1]:.4f}')
 
         if early_stop_counter >= patience:
             break
     
 
-    train={"Loss":[train_losses],"Accuracy":[train_accuracies],"cm":[train_cm]}
-    validation={"Loss":[val_losses],"Accuracy":[val_accuracies],"cm":[val_cm]}
-    test={"Loss":[test_losses],"Accuracy":[test_accuracies],"cm":[test_cm]}
-
+    train={"Loss": train_losses, "Accuracy": train_accuracies, "F1 Score": train_f1_scores, "Precision": train_precisions, "Recall": train_recalls, "cm": train_cm}
+    validation={"Loss": val_losses, "Accuracy": val_accuracies, "F1 Score": val_f1_scores, "Precision": val_precisions, "Recall": val_recalls, "cm": val_cm}
+    test={"Loss": test_losses, "Accuracy": test_accuracies, "F1 Score": test_f1_scores, "Precision": test_precisions, "Recall": test_recalls, "cm": test_cm}
 
     return train, validation, test
+
 
 def plot_confusion_matrix(cm, title='Confusion Matrix'):
     plt.figure(figsize=(8, 6))
