@@ -164,6 +164,7 @@ dependencies:
   - zstd=1.5.5=hd43e919_0
   - pip:
       - altair==5.3.0
+      - joblib ==1.2.0
       - blinker==1.8.1
       - cachetools==5.3.3
       - cloudpickle==3.0.0
