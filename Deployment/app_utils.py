@@ -28,7 +28,7 @@ def preprocess(dataset):
     return z_scores
 
 def predict(data):
-    loaded_rf_model = load('random_forest_model.joblib')
+    loaded_rf_model = load('Deployment/random_forest_model.joblib')
     # Make predictions using the loaded model
     predictions = loaded_rf_model.predict(data)
     return predictions
