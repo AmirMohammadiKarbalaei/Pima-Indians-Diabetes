@@ -8,7 +8,7 @@ def main():
     st.write("This app predicts diabetes using  input data. Ensure that the input data includes the following features: ")
 
     # File uploader for CSV file
-    st.image("Data-Table.PNG")
+    st.image("/mount/src/pima-indians-diabetes/Deployment/Data-Table.PNG")
     uploaded_file = st.file_uploader("Upload your data as a CSV file ", type=["csv"])
 
     if uploaded_file is not None:
