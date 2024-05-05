@@ -5,10 +5,10 @@ from app_utils import *
 # Create the Streamlit web app
 def main():
     st.title('Diabetes Prediction')
-    st.write("This app predicts diabetes using  input data. Ensure that the input data includes the following features: ")
+    st.write("This app predicts diabetes using  input data. Ensure that the input data includes the following features: Pregnancies, Glucose, BloodPressure, SkinThickness, Insulin, BMI, DiabetesPedigreeFunction and patient's Age ")
 
     # File uploader for CSV file
-    st.image("pima-indians-diabetes/Deployment/Data-Table.PNG")
+    #st.image("Deployment/Data-Table.PNG")
     uploaded_file = st.file_uploader("Upload your data as a CSV file ", type=["csv"])
 
     if uploaded_file is not None:
