@@ -20,15 +20,16 @@ def preprocess(dataset):
     data['Insulin_skin_Interact'] = df['Insulin'] * df['SkinThickness']
     data['SkinThickness_to_BMI_Ratio'] = df['SkinThickness'] * df['BMI']
 
-  
-    z_scores = data.apply(zscore)
+    if len(data) >1:
+
+        data = data.apply(zscore)
 
     print("Data is ready!!")
 
-    return z_scores
+    return data
 
 def predict(data):
-    loaded_rf_model = load('Deployment/random_forest_model.joblib')
+    loaded_rf_model = load('./random_forest_model.joblib')
     # Make predictions using the loaded model
     predictions = loaded_rf_model.predict(data)
     return predictions
