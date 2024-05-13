@@ -185,9 +185,11 @@ def main():
                     prediction = predict(processed_data.values)
                     st.subheader('Prediction:')
                     if prediction == 1:
-                        st.write("Positive")
+                        st.error("Positive")
+                        st.write("This individual is predicted to have diabetes.")
                     else:
-                        st.write("Negative")
+                        st.success("Negative")
+                        st.write("This individual is predicted to not have diabetes.")
 
                 except Exception as e:
                     st.error(f"An error occurred: {str(e)}")
