@@ -1,30 +1,60 @@
 # Pima Indians Diabetes Classification
 
-## DATA
+This project focuses on developing a predictive model to diagnose diabetes in Pima Indians using machine learning techniques. The dataset includes various medical predictor variables and a target variable indicating diabetes presence.
 
-The dataset consists of several medical predictor (independent) variables and one target (dependent) variable, Outcome. Independent variables include the number of pregnancies the patient has had, their BMI, insulin level, age, and more.
+## Dataset
 
-## PROCESS
+- **Features**: Includes medical metrics such as the number of pregnancies, BMI, insulin levels, age, and more.
+- **Target**: Diabetes outcome (`0` = No, `1` = Yes).
 
-The development of a predictive model has involved the implementation of the following procedural steps:
+## Process
 
-### Exploratory Data Analysis (EDA)
-After comprehensive data cleansing, the dataset has undergone thorough exploratory analysis. Each feature has been carefully examined to determine acceptable ranges and ensure data integrity.
+1. **Exploratory Data Analysis (EDA)**
+   - Conducted comprehensive data cleansing.
+   - Performed detailed analysis of each feature to ensure data quality and integrity.
 
-### Feature Engineering
-To enhance model performance, new features such as interactions between features have been integrated. The importance of these features has been evaluated using SHAP (Shapley Additive Explanations).
+2. **Feature Engineering**
+   - Created new features and assessed their impact using SHAP (Shapley Additive Explanations).
 
-### Synthetic Minority Oversampling Technique (SMOTE)
-SMOTE is an oversampling method specifically designed for minority classes, generating synthetic samples to address overfitting issues associated with random oversampling. By employing this technique, we augment the data points in the minority class, thereby enhancing the model's ability to effectively learn from imbalanced datasets.
+3. **Synthetic Minority Oversampling Technique (SMOTE)**
+   - Applied SMOTE to address class imbalance by generating synthetic samples for the minority class, enhancing model performance.
 
-### Model Implementation
-Various ML models have been implemented, with the Random Forest classifier scoring the highest with 93% accuracy. Random Forest feature importance can be seen from the image on the right-hand side.
+4. **Model Implementation**
+   - **Random Forest**: Achieved 93% accuracy. Feature importance was analyzed using SHAP, revealing that low insulin levels and the interaction between age and insulin are highly influential.
+   - **Deep Learning Model**: Evaluated for performance; results were comparable to the Random Forest model.
 
-The SHAP summary plot reveals the influential features driving our model's predictions. Notably, low Insulin values and low interaction between age and Insulin values exhibit substantial influence, while features like Blood Pressure and the number of pregnancies have minimal impact. Discarding these less impactful features can effectively reduce computational costs without compromising the model's predictive performance.
+5. **Deployment**
+   - **Model Selection**: Random Forest was chosen for deployment due to its interpretability and efficiency.
+   - **Streamlit Application**: Developed for easy prediction, with integrated preprocessing and feature engineering.
 
-A sequential model has also been implemented to check for its suitability for our use case. The accuracies and losses for test, train, and validation sets are shown in the NN Model Evaluation picture. The deep learning model proved to be similar to the random forest performance.
+## Key Insights
 
-### Deployment
-Following a comparative evaluation, the Random Forest (RF) model has been selected for deployment due to its performance similarity to the deep learning model. This decision is underpinned by the RF model's interpretability and its lightweight, scalable characteristics, making it a pragmatic choice over deep learning models which demand significant computational resources.
+- **Influential Features**: Low insulin values and the interaction between age and insulin significantly affect predictions.
+- **Less Impactful Features**: Features like blood pressure and number of pregnancies have minimal effect and can be omitted to reduce computational costs.
 
-To streamline the model's usability for prediction, a Streamlit application has been developed. This application seamlessly processes input data in the form of a pandas dataframe resembling the training dataset, conducting necessary preprocessing and feature engineering to enable predictions.
+## Installation
+
+To install the necessary dependencies, run:
+
+```bash
+pip install -r requirements.txt
+```
+
+## Usage
+
+1. **Run the Streamlit Application**
+   ```bash
+   streamlit run app.py
+   ```
+
+2. **Input Data**
+   - Prepare a pandas DataFrame with the same structure as the training dataset.
+   - The Streamlit app will handle preprocessing and feature engineering, then provide predictions.
+
+## Contributing
+
+Contributions are welcome! If you have suggestions, bug reports, or feature requests, please open an issue or submit a pull request.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
